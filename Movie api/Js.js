@@ -1,110 +1,116 @@
 
-const apiUrl = 'https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=04c35731a5ee918f014970082a0088b1&page=1';
-const IMGPATH = "https://image.tmdb.org/t/p/w1280";
-
-
-///Search by query
-const SEARCHAPI ="https://api.themoviedb.org/3/search/movie?&api_key=04c35731a5ee918f014970082a0088b1&query=";
 
 const main = document.getElementById("main");
 const form = document.getElementById("form");
 const search = document.getElementById("search");
 const module = document.getElementById("module");
 
-//varible  what is this...null  last time --> new  empty 1st we run ..> changing 
- this.data; 
-
-
 
 ///fetch from json
 fetchJson();
 
+function handleErrors(response) {
+  // console.log(response);
+  if (!response.ok) {
+    console.log("notworking")
+      throw Error(response.statusText);    
+  }
+  return response;
+}
 
 
 function fetchJson(){
-
     ///fetch json
     fetch("./Json/url.json").then(res => res.json())
     .then(function(data){
         ///check for result
-    console.log(data);
-
+    // console.log(data);
     //Wrapper function
   fetchdata (data);
   
 });
 }
 
-
 function fetchdata(data){
-
     console.log(data)
     let i = 0
     ///how do use the data x amount objects in json
 data.forEach(url => {
- console.log(url.Url);
  /// fetch api
+ console.log(url.vid);
  fetch(url.Url)
+ // catch error
+   .then(handleErrors).catch(function(error) {
+    console.log(error)
+})
+/// do render
    .then((res) => res.json())
    .then(function (element) {
      console.log(element);
-
      const el = document.createElement('div');
      el.setAttribute("class", "movie-gallery")
-
-    
      const image = document.createElement('img');
      const text = document.createElement('h2');
-     data = this.data;
-
      text.innerHTML = `${element.Title}`;
      image.src = element.Poster;
-
      ///content in divs
      el.appendChild(image);
      el.appendChild(text);
      //main div  
      main.appendChild(el);
- 
 ////click and pass values from fetch to be rendered
 ///html collection 
      document.getElementsByClassName("movie-gallery")[i].addEventListener('click', function (e) {
-       //  console.log(element); 
-         contentWrap(element);
+        //  console.log(element); 
+         contentWrap(element, url.vid);
        });
      i++
- }); 
+ })
 }); 
-
 }
 
+contentWrap = (element,vid) => {
 
+  var date = new Date();
+  var now = date.getFullYear();
 
-
-
-contentWrap = (element) => {
-
+  let year =  now - element.Year;
     ///clear the elm
     module.innerHTML = "";
 //srcs
     let imagesrc = element.Poster;
-   // console.log(image.src);
+ 
 
-    ///escape string insert values passed from fetch
+//if video --------- CORB google block.
+ // console.log(image.src);
+/* <video controls">
+  <source src="{vid} type="video/mp4">
+  Your browser does not support the video tag.
+</video> */
+
+   //-------
+
+///escape string insert values passed from fetch
     module.innerHTML += `
-    <div class="Module-inner">
-    <img src="${imagesrc}"  id="module-img" alt="">
+    <div class="Module-inner" id="module-inner">
+    <img src="${imagesrc}"  id="module-img" alt=""></img>
+    
     <div id="hero"> 
-    <h1>${element.Title}</h1>
+    <h1>${element.Title} </h1>
+    <h1>  ${year} years old</h1>
     <p id="info">${element.Plot}</p>
     </div>
     </div>
         `
+        const inner = document.getElementById("hero");
+        if (element.Metascore != "N/A") {
+          inner.innerHTML += ` <h1>  ${element.Metascore}  MetaScore</h1>`
+        } else {
+          
+          inner.innerHTML += ` <h1>  No MetaScore</h1>`
+        }
 };
-///get stuff to render in
-
-
-
+///get stuff to render in with search
 
 
 form.addEventListener("submit", (e) => {
@@ -122,6 +128,9 @@ form.addEventListener("submit", (e) => {
 
 
 
+
+
+
 // // const searchUrl = "http://www.omdbapi.com/?t="Batman"+"&apikey="+apiKey ;Here is your key: 62ae43fb
 
 // Please append it to all of your API requests,
@@ -134,6 +143,8 @@ form.addEventListener("submit", (e) => {
 
 
 
+// const apiUrl = 'https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=04c35731a5ee918f014970082a0088b1&page=1';
+// const IMGPATH = "https://image.tmdb.org/t/p/w1280";
 
 
 
@@ -159,6 +170,9 @@ form.addEventListener("submit", (e) => {
 // //varible  what is this...null  last time --> new  empty 1st we run ..> changing 
 //  this.data; 
 
+
+// /Search by query
+// const SEARCHAPI ="https://api.themoviedb.org/3/search/movie?&api_key=04c35731a5ee918f014970082a0088b1&query=";
 
 
 // ///inner html
